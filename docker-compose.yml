@@ -7,8 +7,20 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./ssl/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
-      - ./ssl/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      # - ./ssl/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+      # - ./ssl/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      # - ./config/nginx/conf:/etc/nginx/conf.d/:rw
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes: 
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email nguyenhung09082000@gmail.com -d hungnln.click --agree-tos
+    depends_on:
+      - nginx
   backend:
     image: hungnln98/vleague-app:latest
     # image: local-be:v1
